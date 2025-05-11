@@ -1,0 +1,48 @@
+#version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      - POSTGRES_DB=
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U  -d " ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    ports:
+      - "5432:5432"
+    #  volumes:
+    #    - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  wrm:
+    build:
+      context: .
+    image: wrm-postgres:latest
+    container_name: wrm_backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/
+      - SPRING_DATASOURCE_USERNAME=
+      - SPRING_DATASOURCE_PASSWORD=
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+      - SPRING_LIQUIBASE_CHANGE_LOG=classpath:liquibase/changelog-master.yml
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+#volumes:
+#  postgres_data:
+
+networks:
+  backend:
+    driver: bridge
