@@ -45,7 +45,7 @@ public class SubscriptionController {
     @GetMapping("/top")
     public ResponseEntity<List<SubscriptionTopDTO>> getTop3Subscriptions() {
         logger.debug("\"GET\" getTop3Subscriptions method was invoke...");
-        List<SubscriptionTopDTO> top3Subscriptions = subscriptionService.findTop3Subscriptions();
+        List<SubscriptionTopDTO> top3Subscriptions = subscriptionService.findTop3SubscriptionsDesc();
         return ResponseEntity.status(HttpStatus.OK).body(top3Subscriptions);
     }
 

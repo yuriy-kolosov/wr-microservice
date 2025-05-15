@@ -2,6 +2,7 @@ package pro.sky.wr_m.service.impl;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,9 @@ import java.util.stream.Collectors;
 @Data
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
+
+    @Value("${wr-m.sub-pages-amount:100}")
+    private String pageAmountValue;
 
     private final UzerRepository uzerRepository;
     private final SubscriptionRepository subscriptionRepository;
@@ -116,45 +120,68 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     /**
      * Method to read TOP-3 subscriptions (database reading by pages)
      *
-     * @return sorted TOP-3 subscriptions
+     * @return TOP-3 subscriptions sorted by Desc
      */
     @Override
-    public List<SubscriptionTopDTO> findTop3Subscriptions() {
+    public List<SubscriptionTopDTO> findTop3SubscriptionsDesc() {
+
+        int pageAmount = Integer.parseInt(pageAmountValue);
+        return findTop3SubscriptionsByAsc(getSubMapByPages(pageAmount).entrySet()).stream()
+                .sorted(Comparator.comparing(SubscriptionTopDTO::getCount).reversed()).toList();
+    }
+
+    /**
+     * Method to get Map of subscriptions (database reading by pages)
+     *
+     * @param pageAmount pageAmount defined by application.properties {}wr-m.sub-pages-amount} value
+     * @return subscription Map unsorted
+     */
+    private Map<String, Long> getSubMapByPages(int pageAmount) {
 
         int pageNumber = 1;
-        int pageAmount = 100;
+        SubscriptionTopDTO subscriptionTopDTO;
+        Map<String, Long> subscriptionTopDTOMap = new HashMap<>();
+
+        do {
+            Pageable subscriptionPages = PageRequest.of(pageNumber - 1, pageAmount);
+            Page<SubscriptionTopDTO> subscriptionTopDTOPage = subscriptionRepository.findSubByPages(subscriptionPages);
+
+            for (int i = 0; (i < subscriptionTopDTOPage.getNumberOfElements())
+                    && subscriptionTopDTOPage.hasContent(); i++) {
+                subscriptionTopDTO = subscriptionTopDTOPage.getContent().get(i);
+                if (!subscriptionTopDTOMap.containsKey(subscriptionTopDTO.getSubscription())) {
+                    subscriptionTopDTOMap.put(subscriptionTopDTO.getSubscription(), subscriptionTopDTO.getCount());
+                } else {
+                    subscriptionTopDTOMap.put(subscriptionTopDTO.getSubscription()
+                            , subscriptionTopDTOMap.get(subscriptionTopDTO.getSubscription())
+                                    + subscriptionTopDTO.getCount());
+                }
+            }
+        }
+        while (pageNumber++ < pageAmount - 1);
+        return subscriptionTopDTOMap;
+    }
+
+    /**
+     * Method to get TOP-3 subscriptions
+     *
+     * @param subMapEntry subscription Map unsorted
+     * @return TOP-3 subscriptions sorted by Asc
+     */
+    private List<SubscriptionTopDTO> findTop3SubscriptionsByAsc(Set<Map.Entry<String, Long>> subMapEntry) {
+
         SubscriptionTopDTO subscriptionTopDTOBlank = new SubscriptionTopDTO("Претендент не найден", 0L);
 
         List<SubscriptionTopDTO> subscriptionTopDTOListFinal = new ArrayList<>();
         subscriptionTopDTOListFinal.add(subscriptionTopDTOBlank);
         subscriptionTopDTOListFinal.add(subscriptionTopDTOBlank);
         subscriptionTopDTOListFinal.add(subscriptionTopDTOBlank);
-        SubscriptionTopDTO subscriptionTopDTO;
-        Map<String, Long> subscriptionTopDTOMap = new HashMap<>();
-
-        int countSubscriptions = subscriptionRepository.countAllSubscription();
-
-        do {
-            Pageable subscriptionPages = PageRequest.of(pageNumber++ - 1, pageAmount);
-
-            Page<SubscriptionTopDTO> subscriptionTopDTOPage = subscriptionRepository.findTopByPages(subscriptionPages);
-            long subscriptionNumber = subscriptionTopDTOPage.getTotalElements();
-
-            for (int i = 0; i < subscriptionNumber; i++) {
-                subscriptionTopDTO = subscriptionTopDTOPage.getContent().get(i);
-                subscriptionTopDTOMap.put(subscriptionTopDTO.getSubscription(), subscriptionTopDTO.getCount());
-            }
-        }
-        while (pageNumber * pageAmount < countSubscriptions);
-
-        Set<Map.Entry<String, Long>> subscriptionTopDTOSet = subscriptionTopDTOMap.entrySet();
-        List<Map.Entry<String, Long>> subscriptionTopDTOListTotal = subscriptionTopDTOSet.stream().toList();
 
         String subscription;
         Long count;
         int topAssignedNumber = 2;
 
-        for (Map.Entry<String, Long> subscriptionTopDTOTemp : subscriptionTopDTOListTotal) {
+        for (Map.Entry<String, Long> subscriptionTopDTOTemp : subMapEntry) {
 
             subscription = subscriptionTopDTOTemp.getKey();
             count = subscriptionTopDTOTemp.getValue();
@@ -164,7 +191,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 if ((count > subscriptionTopDTOListFinal.get(k).getCount())) {
 
                     SubscriptionTopDTO subscriptionTopDTOFromTotal = new SubscriptionTopDTO();
-
                     subscriptionTopDTOFromTotal.setSubscription(subscription);
                     subscriptionTopDTOFromTotal.setCount(count);
 
@@ -182,8 +208,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 }
             }
         }
-        return subscriptionTopDTOListFinal.stream()
-                .sorted(Comparator.comparing(SubscriptionTopDTO::getCount).reversed()).toList();
+        return subscriptionTopDTOListFinal;
     }
 
 }
