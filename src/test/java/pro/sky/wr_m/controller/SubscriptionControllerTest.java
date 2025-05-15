@@ -41,9 +41,8 @@ public class SubscriptionControllerTest {
     @Test
     public void getTop3SubscriptionsTest() throws Exception {
 //                                                              Подготовка
-        when(subscriptionRepository.countAllSubscription()).thenReturn(SUBSCRIPTION_ALL_COUNT);
         PageRequest subscriptionPages = PageRequest.of(SUBSCRIPTION_PAGE_NUMBER - 1, SUBSCRIPTION_PAGE_AMOUNT);
-        when(subscriptionRepository.findTopByPages(subscriptionPages)).thenReturn(SUBSCRIPTION_TOP_DTO_PAGE);
+        when(subscriptionRepository.findSubByPages(subscriptionPages)).thenReturn(SUBSCRIPTION_TOP_DTO_PAGE);
 //                                                              Выполнение
         mockMvc.perform(MockMvcRequestBuilders
                         .get(getTop3SubscriptionsTest_url)

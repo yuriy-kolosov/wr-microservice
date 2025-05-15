@@ -13,6 +13,6 @@ public interface SubscriptionService {
 
     SubscriptionDTO deleteSubscription(Long subId, Long userId);
 
-    List<SubscriptionTopDTO> findTop3Subscriptions();
+    List<SubscriptionTopDTO> findTop3SubscriptionsDesc();
 
 }

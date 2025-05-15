@@ -20,11 +20,8 @@ public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity
     @Query(value = "SELECT * FROM subscriptions WHERE subscriber_id = :id", nativeQuery = true)
     List<SubscriptionEntity> findAllById(@Param("id") Long id);
 
-    @Query(value = "SELECT COUNT(subscription) FROM subscriptions", nativeQuery = true)
-    int countAllSubscription();
-
-    @Query(value = "SELECT subscription, COUNT(subscription) FROM subscriptions GROUP BY subscription ORDER BY COUNT DESC"
+    @Query(value = "SELECT subscription, COUNT(subscription) FROM subscriptions GROUP BY subscription ORDER BY COUNT"
             , nativeQuery = true)
-    Page<SubscriptionTopDTO> findTopByPages(Pageable pageable);
+    Page<SubscriptionTopDTO> findSubByPages(Pageable pageable);
 
 }
