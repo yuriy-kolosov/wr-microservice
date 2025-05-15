@@ -43,47 +43,10 @@ ____
 ### 1 Клонировать исходный код проекта из репозитория GitHub на локальный компьютер: выполнить команду:
 - git clone https://github.com/yuriy-kolosov/wr-microservice.git <имя_локального_каталога>
 
-### 2 На локальном компютере создать тестовую базу данных PostgreSQL
+### 2 В локальном каталоге <имя_локального_каталога> выполнить команду:
+- docker-compose up
 
-### 3 В локальном каталоге <имя_локального_каталога>\src\main\resources отредактировать файл application.properties, указав:
-- spring.datasource.url=jdbc:postgresql://localhost:5432/<название_базы_данных>
-- spring.datasource.username=<имя_пользователя>
-- spring.datasource.password=<пароль>
-
-### 4 Указать <название_базы_данных>, <имя_пользователя> и <пароль> в файле docker-compose.yml в следующих позициях:
-
-- db:
-    image: postgres:16
-    container_name: postgres_db
-    environment:
-      - POSTGRES_DB=<название_базы_данных>
-      - POSTGRES_USER=<имя_пользователя>
-      - POSTGRES_PASSWORD=<пароль>
-
--    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U <имя_пользователя> -d <название_базы_данных>" ]
-
-- wrm:
-    build:
-      context: .
-    image: wrm-postgres:latest
-    container_name: wrm_backend
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/<название_базы_данных>
-      - SPRING_DATASOURCE_USERNAME=<имя_пользователя>
-      - SPRING_DATASOURCE_PASSWORD=<пароль>
-
-### 5 В локальном каталоге <имя_локального_каталога> выполнить команду:
-- mvn clean package
-
-### 6 В локальном каталоге <имя_локального_каталога> выполнить следующие команды:
-- docker build -t wrm-postgres .
-- docker-compose up --no-build
-
-### 7 Выполнить проверку работоспособности микросервиса на основании приведенного ниже описания (файл openapi.yaml) и/или с использованием следующих примеров запросов:
+### 3 Выполнить проверку работоспособности микросервиса на основании приведенного ниже описания (файл openapi.yaml) и/или с использованием следующих примеров запросов:
 
 - GET http://localhost:8080/user/1
 
