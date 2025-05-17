@@ -1,7 +1,5 @@
 package pro.sky.wr_m.constants;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import pro.sky.wr_m.dto.SubscriptionTopDTO;
 
 import java.util.List;
@@ -26,7 +24,5 @@ public class SubscriptionControllerTestConstants {
             , SUBSCRIPTION_COUNT);
 
     public static final List<SubscriptionTopDTO> SUBSCRIPTION_TOP_DTO_LIST = List.of(SUBSCRIPTION_TOP_DTO);
-
-    public static final Page<SubscriptionTopDTO> SUBSCRIPTION_TOP_DTO_PAGE = new PageImpl<>(SUBSCRIPTION_TOP_DTO_LIST);
 
 }
