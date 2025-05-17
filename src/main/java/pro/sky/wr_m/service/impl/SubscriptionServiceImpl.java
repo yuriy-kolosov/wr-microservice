@@ -76,7 +76,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             return subscriptionDTOAdded;
 
         } else {
-            throw new InvalidUserException("Ошибка в идентификаторе пользователя");
+            throw new InvalidUserException("Ошибка в данных пользователя: идентификатор");
         }
     }
 
@@ -105,7 +105,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             return subscriptionDTO;
 
         } else {
-            throw new InvalidUserException("Ошибка в идентификаторе пользователя");
+            throw new InvalidUserException("Ошибка в данных пользователя: идентификатор");
         }
     }
 

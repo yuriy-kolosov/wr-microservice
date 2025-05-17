@@ -41,7 +41,11 @@ public class UzerServiceImpl implements UzerService {
     public UzerDTO createUser(UzerDTO userDTO) {
         UzerEntity uzerEntity = UzerMapper.INSTANCE.toEntity(userDTO);
         uzerEntity.setId(null);                         // Будет сгенерирован новый id
-        uzerRepository.save(uzerEntity);
+        try {
+            uzerRepository.save(uzerEntity);
+        } catch (Exception ex) {
+            throw new InvalidUserException("Ошибка в данных пользователя: email: нарушена уникальность ");
+        }
         return UzerMapper.INSTANCE.toDTO(uzerEntity);
     }
 
@@ -56,11 +60,15 @@ public class UzerServiceImpl implements UzerService {
     public UzerDTO updateUser(UzerDTO userDTO, Long userId) {
         UzerEntity uzerEntity = uzerRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Пользователь отсутствует в базе данных"));
-        if (uzerEntity.getId() == userId) {
-            uzerRepository.save(UzerMapper.INSTANCE.toEntity(userDTO));
+        if (userDTO.getId() == userId) {
+            try {
+                uzerRepository.save(UzerMapper.INSTANCE.toEntity(userDTO));
+            } catch (Exception ex) {
+                throw new InvalidUserException("Ошибка в данных пользователя: email: нарушена уникальность ");
+            }
             return userDTO;
         } else {
-            throw new InvalidUserException("Ошибка в идентификаторе пользователя");
+            throw new InvalidUserException("Ошибка в данных пользователя: идентификатор");
         }
     }
 
