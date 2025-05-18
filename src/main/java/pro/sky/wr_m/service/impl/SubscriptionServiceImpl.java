@@ -51,7 +51,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     /**
-     * Method to add information about user new subscription
+     * Method to add information about new user subscription
      *
      * @param subscriptionDTO new subscription data
      * @param userId          user's id
@@ -118,7 +118,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public List<SubscriptionTopDTO> findTop3SubscriptionsDesc() {
 
         List<SubscriptionTopDTO> topSubList = subscriptionRepository.findTop3SubDesc();
-        SubscriptionTopDTO subscriptionTopDTOBlank = new SubscriptionTopDTO("Претендент не найден" , 0L);
+        SubscriptionTopDTO subscriptionTopDTOBlank = new SubscriptionTopDTO("Претендент не найден", 0L);
 
         switch (topSubList.size()) {
             case 0:
