@@ -62,8 +62,8 @@ public class UzerController {
                                     schema = @Schema(implementation = UzerDTO.class)
                             )),
                     @ApiResponse(
-                            responseCode = "500",
-                            description = "Invalid Data"
+                            responseCode = "400",
+                            description = "Bad Request"
                     )
             })
     @PostMapping()
@@ -84,12 +84,12 @@ public class UzerController {
                                     schema = @Schema(implementation = UzerDTO.class)
                             )),
                     @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found"
+                            responseCode = "400",
+                            description = "Bad Request"
                     ),
                     @ApiResponse(
-                            responseCode = "500",
-                            description = "Invalid Data"
+                            responseCode = "404",
+                            description = "Not Found"
                     )
             })
     @PutMapping("/{id}")
