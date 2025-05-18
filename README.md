@@ -173,8 +173,8 @@ ____
               }
             }
           },
-          "404": {
-            "description": "Not Found",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "*/*": {
                 "schema": {
@@ -183,8 +183,8 @@ ____
               }
             }
           },
-          "500": {
-            "description": "Invalid Data",
+          "404": {
+            "description": "Not Found",
             "content": {
               "*/*": {
                 "schema": {
@@ -264,8 +264,8 @@ ____
               }
             }
           },
-          "500": {
-            "description": "Invalid Data",
+          "400": {
+            "description": "Bad Request",
             "content": {
               "*/*": {
                 "schema": {
